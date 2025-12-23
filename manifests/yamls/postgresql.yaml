@@ -11,6 +11,30 @@ No Load Balancing: It bypasses the standard kube-proxy load balancing, giving th
 The volumeClaimTemplates field simplifies storage management by automating the creation of unique resources for every replica. 
 PVC Generation: When you apply a StatefulSet with 3 replicas, Kubernetes automatically generates 3 separate PersistentVolumeClaims (PVCs) following a strict naming convention: {claimName}-{podName} (e.g., data-web-0, data-web-1, data-web-2).
 
+wheras in deployment pv and pvc are created seperately and they will be mounted across all the pod as shared pvc 
+spec:
+      containers:
+      - name: nginx
+        image: nginx:latest
+        volumeMounts:
+        - mountPath: "/usr/share/nginx/html"  # Path inside the container
+          name: storage-volume
+      volumes:
+      - name: storage-volume
+        persistentVolumeClaim:
+          claimName: example-pvc  # Must match the name in your PVC YAML
+
+volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes:
+          - "ReadWriteOnce"
+        resources:
+          requests:
+            storage: "20Gi"
+volumeClaimTemplates creates pvc automatically each pvc for each pod and each respective pv will also be created using storage class name
+
 PV Provisioning::
 1. Dynamic Provisioning (Standard): If you define a storageClassName in your template, the cluster's StorageClass controller will automatically create a matching PersistentVolume (PV) for each new PVC.
 2. Static Provisioning (Manual): If you do not use dynamic provisioning, you must manually create PVs that match the labels or requirements of the generated PVCs.
