@@ -1,3 +1,11 @@
+HPA operates as a continuous control loop (defaulting to every 15 seconds). 
+Monitor: It queries the Metrics Server to get the current CPU and memory usage of all pods in a target workload.
+Calculate: It uses a ratio-based formula to determine the necessary number of pods:
+Example: If you have 2 pods at 80% CPU and your target is 40%, 
+HPA will scale up to 4 pods to halve the load per pod.
+Scale: It updates the replicas field of the target workload. Kubernetes then creates or deletes pods to reach that number.
+
+
 # Legacy HPA api in case autoscaling/v2beta2 is unavailable
 apiVersion: autoscaling/v2beta1
 kind: HorizontalPodAutoscaler
